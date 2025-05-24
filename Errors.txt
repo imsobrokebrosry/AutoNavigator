@@ -1,0 +1,3 @@
+Build failed:
+[5/24/2025 22:38:33, C:\Users\zeros\Desktop\repanent\cor\Plugins\Source\AutoNavigator\AutoNavigatorExtensions.cs(11, 43)] CS0122: 'AutoNavigator.GridToWorldMultiplier' is inaccessible due to its protection level
+[5/24/2025 22:38:33, C:\Users\zeros\Desktop\repanent\cor\Plugins\Source\AutoNavigator\AutoNavigator.cs(239, 23)] CS1501: No overload for method 'Click' takes 3 arguments
