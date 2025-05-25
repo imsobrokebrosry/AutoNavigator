@@ -1,24 +1,102 @@
-Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 17
-VisualStudioVersion = 17.5.2.0
-MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AutoNavigator", "AutoNavigator.csproj", "{4CF1B9D5-D975-E934-4BA3-95AA6F98EBFA}"
-EndProject
-Global
-	GlobalSection(SolutionConfigurationPlatforms) = preSolution
-		Debug|Any CPU = Debug|Any CPU
-		Release|Any CPU = Release|Any CPU
-	EndGlobalSection
-	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{4CF1B9D5-D975-E934-4BA3-95AA6F98EBFA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{4CF1B9D5-D975-E934-4BA3-95AA6F98EBFA}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{4CF1B9D5-D975-E934-4BA3-95AA6F98EBFA}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{4CF1B9D5-D975-E934-4BA3-95AA6F98EBFA}.Release|Any CPU.Build.0 = Release|Any CPU
-	EndGlobalSection
-	GlobalSection(SolutionProperties) = preSolution
-		HideSolutionNode = FALSE
-	EndGlobalSection
-	GlobalSection(ExtensibilityGlobals) = postSolution
-		SolutionGuid = {AC3272A8-FE3C-435C-83B7-F671DF317C8C}
-	EndGlobalSection
-EndGlobal
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0-windows</TargetFramework>
+    <PlatformTarget>x64</PlatformTarget>
+    <LangVersion>12.0</LangVersion>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <Optimize>true</Optimize>
+    <DebugType>portable</DebugType>
+    <UseWindowsForms>true</UseWindowsForms>
+    <EnableWindowsTargeting>true</EnableWindowsTargeting>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+    <CopyLocalLockFileAssemblies>false</CopyLocalLockFileAssemblies>
+    <ProduceReferenceAssembly>false</ProduceReferenceAssembly>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <OutputPath>bin\Debug\</OutputPath>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <DefineConstants>TRACE</DefineConstants>
+    <OutputPath>bin\Release\</OutputPath>
+    <Optimize>true</Optimize>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Reference Include="ExileCore2">
+      <HintPath>$(SolutionDir)ExileCore2.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="GameOffsets2">
+      <HintPath>$(SolutionDir)GameOffsets2.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="Newtonsoft.Json">
+      <HintPath>$(SolutionDir)Newtonsoft.Json.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="SharpDX">
+      <HintPath>$(SolutionDir)SharpDX.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="SharpDX.Mathematics">
+      <HintPath>$(SolutionDir)SharpDX.Mathematics.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="ImGui.NET">
+      <HintPath>$(SolutionDir)ImGui.NET.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="System.Numerics.Vectors" Version="4.5.0" />
+    <PackageReference Include="System.Drawing.Common" Version="8.0.0" />
+    <PackageReference Include="System.Windows.Forms" Version="8.0.0" />
+  </ItemGroup>
+
+  <!-- Optional: If you want to include additional pathfinding libraries -->
+  <!--
+  <ItemGroup>
+    <PackageReference Include="AStar" Version="1.0.0" />
+  </ItemGroup>
+  -->
+
+  <ItemGroup>
+    <Compile Include="AutoNavigator.cs" />
+    <Compile Include="PathfindingEngine.cs" />
+    <Compile Include="ObstacleHandler.cs" />
+    <Compile Include="StuckDetector.cs" />
+    <Compile Include="AutoNavigatorExtensions.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="README.md" />
+  </ItemGroup>
+
+  <!-- Post-build events for plugin deployment -->
+  <Target Name="PostBuild" AfterTargets="PostBuildEvent" Condition="'$(Configuration)'=='Debug'">
+    <Exec Command="echo Plugin built successfully for ExileCore2" />
+  </Target>
+
+  <!-- Ensure proper assembly loading for ExileCore2 -->
+  <Target Name="PreBuild" BeforeTargets="PreBuildEvent">
+    <Message Text="Building AutoNavigator Plugin for ExileCore2..." Importance="high" />
+  </Target>
+
+  <!-- Clean up unnecessary files -->
+  <Target Name="CleanOutputDirectory" AfterTargets="Build">
+    <ItemGroup>
+      <FilesToDelete Include="$(OutputPath)*.pdb" Condition="'$(Configuration)'=='Release'" />
+      <FilesToDelete Include="$(OutputPath)*.xml" />
+    </ItemGroup>
+    <Delete Files="@(FilesToDelete)" ContinueOnError="true" />
+  </Target>
+
+</Project>
