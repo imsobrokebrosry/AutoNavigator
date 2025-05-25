@@ -14,7 +14,7 @@ using ExileCore2.Shared.Attributes;
 using ExileCore2.Shared.Interfaces;
 using ExileCore2.Shared.Nodes;
 using GameOffsets2.Native;
-using static ExileCore2.Input; // Add this to use Input methods directly
+using static ExileCore2.Input;
 
 namespace AutoNavigator;
 
@@ -27,69 +27,104 @@ public class AutoNavigatorSettings : ISettings
     public HotkeyNode StopNavigationHotkey { get; set; } = new HotkeyNode(Keys.F2);
     public ListNode MovementType { get; set; } = new ListNode { Values = new List<string> { "Mouse", "WASD" }, Value = "Mouse" };
     public RangeNode<int> MovementSpeed { get; set; } = new RangeNode<int>(100, 10, 500);
-    public RangeNode<float> WaypointTolerance { get; set; } = new RangeNode<float>(5.0f, 1.0f, 20.0f);
-    public RangeNode<int> ClickDelay { get; set; } = new RangeNode<int>(50, 10, 200);
+    public RangeNode<float> WaypointTolerance { get; set; } = new RangeNode<float>(15.0f, 5.0f, 30.0f);
+    public RangeNode<int> ClickDelay { get; set; } = new RangeNode<int>(100, 50, 300);
     public RangeNode<int> StepSize { get; set; } = new RangeNode<int>(32, 20, 50);
     
     // Pathfinding Settings
     public ToggleNode UseAdvancedPathfinding { get; set; } = new ToggleNode(true);
-    public RangeNode<int> PathCropRadius { get; set; } = new RangeNode<int>(25, 10, 50);
-    public RangeNode<int> MaxPathLength { get; set; } = new RangeNode<int>(100, 50, 200);
-    public RangeNode<int> ExtraPointsCount { get; set; } = new RangeNode<int>(4, 2, 10);
-      // Obstacle Handling
+    public RangeNode<int> PathCropRadius { get; set; } = new RangeNode<int>(40, 20, 80);
+    public RangeNode<int> MaxPathLength { get; set; } = new RangeNode<int>(150, 50, 300);
+    public RangeNode<int> ExtraPointsCount { get; set; } = new RangeNode<int>(6, 3, 12);
+    
+    // Exploration Settings - Python bot style
+    public RangeNode<float> DiscoveryPercent { get; set; } = new RangeNode<float>(0.93f, 0.7f, 1.0f);
+    public RangeNode<float> ExplorationRadius { get; set; } = new RangeNode<float>(80.0f, 40.0f, 120.0f);
+    public RangeNode<int> TSPPointCount { get; set; } = new RangeNode<int>(20, 10, 40);
+    public RangeNode<int> ExplorationUpdateInterval { get; set; } = new RangeNode<int>(2000, 1000, 5000);
+    
+    // Combat Settings - High priority system like Python
+    public RangeNode<float> MonsterDetectionRadius { get; set; } = new RangeNode<float>(50.0f, 20.0f, 100.0f);
+    public RangeNode<float> AttackRange { get; set; } = new RangeNode<float>(20.0f, 10.0f, 40.0f);
+    public RangeNode<int> AttackDelay { get; set; } = new RangeNode<int>(250, 100, 500);
+    public ToggleNode ForceKillRares { get; set; } = new ToggleNode(true);
+    public ToggleNode ForceKillBlues { get; set; } = new ToggleNode(true);
+    
+    // Map Completion Settings
+    public RangeNode<int> MaxMapRunTime { get; set; } = new RangeNode<int>(600, 300, 1200); // seconds
+    public RangeNode<int> MovementDelay { get; set; } = new RangeNode<int>(200, 100, 500);
+    public RangeNode<int> ActionRandomization { get; set; } = new RangeNode<int>(150, 50, 300);
+    
+    // Obstacle Handling
     public ToggleNode AutoOpenDoors { get; set; } = new ToggleNode(true);
     public ToggleNode AutoUseTransitions { get; set; } = new ToggleNode(false);
-    public RangeNode<float> DoorDetectionRadius { get; set; } = new RangeNode<float>(15.0f, 5.0f, 30.0f);
-    public RangeNode<float> TransitionDetectionRadius { get; set; } = new RangeNode<float>(15.0f, 5.0f, 30.0f);    // Combat Settings
-    public RangeNode<float> MonsterDetectionRadius { get; set; } = new RangeNode<float>(40.0f, 10.0f, 80.0f);
-    public RangeNode<float> AttackRange { get; set; } = new RangeNode<float>(15.0f, 5.0f, 30.0f);
-    public RangeNode<int> AttackDelay { get; set; } = new RangeNode<int>(300, 100, 1000); // Much faster
-    
-    // Exploration Settings
-    public RangeNode<float> ExplorationRadius { get; set; } = new RangeNode<float>(50.0f, 20.0f, 100.0f);
-    public RangeNode<int> MovementDelay { get; set; } = new RangeNode<int>(1000, 200, 2000); // 1 second default
-    public RangeNode<int> ActionRandomization { get; set; } = new RangeNode<int>(200, 50, 500); // Smaller random delays
+    public RangeNode<float> DoorDetectionRadius { get; set; } = new RangeNode<float>(20.0f, 10.0f, 40.0f);
+    public RangeNode<float> TransitionDetectionRadius { get; set; } = new RangeNode<float>(25.0f, 10.0f, 50.0f);
     
     // Stuck Detection
     public ToggleNode EnableStuckDetection { get; set; } = new ToggleNode(true);
-    public RangeNode<int> StuckDetectionThreshold { get; set; } = new RangeNode<int>(10, 5, 20);
-    public RangeNode<int> StuckRecoveryDistance { get; set; } = new RangeNode<int>(15, 10, 30);
+    public RangeNode<int> StuckDetectionThreshold { get; set; } = new RangeNode<int>(8, 3, 15);
+    public RangeNode<int> StuckRecoveryDistance { get; set; } = new RangeNode<int>(20, 10, 40);
     public RangeNode<int> TimeoutSeconds { get; set; } = new RangeNode<int>(300, 60, 600);
     
     // Visual Settings
     public ToggleNode DebugMode { get; set; } = new ToggleNode(false);
     public ToggleNode DrawCurrentTarget { get; set; } = new ToggleNode(true);
+    public ToggleNode DrawExplorationPoints { get; set; } = new ToggleNode(true);
     public ToggleNode DrawFullPath { get; set; } = new ToggleNode(false);
     public ColorNode PathColor { get; set; } = new ColorNode(Color.Cyan);
     public ColorNode WaypointColor { get; set; } = new ColorNode(Color.Red);
+    public ColorNode ExplorationColor { get; set; } = new ColorNode(Color.Yellow);
     public ColorNode DebugTextColor { get; set; } = new ColorNode(Color.White);
     
     // Advanced Features
-    public ToggleNode AutoNavigateToNearestTarget { get; set; } = new ToggleNode(false);
-    public ToggleNode OptimizePathWithTSP { get; set; } = new ToggleNode(false);
+    public ToggleNode OptimizePathWithTSP { get; set; } = new ToggleNode(true);
     public ToggleNode UseTerrainWeights { get; set; } = new ToggleNode(true);
+    
+    // Future Implementation Placeholders
+    [Menu("Future Features", "Features to be implemented")]
+    public EmptyNode FutureFeaturesHeader { get; set; } = new EmptyNode();
+    
+    [Menu("Map Preparation", "Waystone upgrading, anointing etc.")]
+    public ToggleNode MapPreparation { get; set; } = new ToggleNode(false); // Disabled for now
+    
+    [Menu("Target Prioritization", "Delirium, essences, rituals, breaches")]
+    public ToggleNode TargetPrioritization { get; set; } = new ToggleNode(false); // Disabled for now
+    
+    [Menu("Stash Management", "Auto stashing and item management")]
+    public ToggleNode StashManagement { get; set; } = new ToggleNode(false); // Disabled for now
+    
+    [Menu("Boss Fight Logic", "Advanced boss encounter handling")]
+    public ToggleNode BossFightLogic { get; set; } = new ToggleNode(false); // Disabled for now
 }
 
 public partial class AutoNavigator : BaseSettingsPlugin<AutoNavigatorSettings>
 {
     public const float GridToWorldMultiplier = 250f / 23f;
-      // Navigation State
+    
+    // Navigation State - Python bot style
     private bool _isNavigating = false;
     private bool _isExploring = false;
-    private bool _isCombating = false;
+    private bool _mapCompleted = false;
     private Entity _currentTarget = null;
-    private Vector2 _explorationTarget = Vector2.Zero;
+    private DateTime _startTime = DateTime.MinValue;
     private DateTime _lastTargetScanTime = DateTime.MinValue;
     private DateTime _lastExplorationUpdate = DateTime.MinValue;
-    private CancellationTokenSource _navigationCts = new CancellationTokenSource();
-      // Combat State
-    private DateTime _lastAttackTime = DateTime.MinValue;
-    private DateTime _lastMovementTime = DateTime.MinValue;
     private DateTime _lastActionTime = DateTime.MinValue;
-    private List<Entity> _nearbyMonsters = new List<Entity>();
+    private DateTime _lastMovementTime = DateTime.MinValue;
+    private DateTime _lastAttackTime = DateTime.MinValue;
+    private CancellationTokenSource _navigationCts = new CancellationTokenSource();
+    
+    // Exploration System - TSP based like Python
+    private List<Vector2> _discoveryPoints = new List<Vector2>();
     private List<Vector2> _exploredAreas = new List<Vector2>();
-    private Vector2 _lastPlayerPosition = Vector2.Zero;
+    private Vector2 _currentExplorationTarget = Vector2.Zero;
+    private int _currentDiscoveryIndex = 0;
     private Random _random = new Random();
+    
+    // Combat State
+    private List<Entity> _nearbyMonsters = new List<Entity>();
+    private Vector2 _lastPlayerPosition = Vector2.Zero;
     
     // Pathfinding
     private PathfindingEngine _pathfinder;
@@ -98,43 +133,47 @@ public partial class AutoNavigator : BaseSettingsPlugin<AutoNavigatorSettings>
     
     // Integration with other plugins
     private Func<Vector2, Action<List<Vector2i>>, CancellationToken, Task> _radarLookForRoute;
-    private Func<string, int, Vector2[]> _radarClusterTarget;
-
-    public override bool Initialise()
+    private Func<string, int, Vector2[]> _radarClusterTarget;    public override bool Initialise()
     {
-        _pathfinder = new PathfindingEngine(this);
-        _obstacleHandler = new ObstacleHandler(this);
-        _stuckDetector = new StuckDetector(this);
-        
-        // Register hotkeys
-        Input.RegisterKey(Settings.StartNavigationHotkey);
-        Input.RegisterKey(Settings.StopNavigationHotkey);
-        
-        // Hook up hotkey events
-        Settings.StartNavigationHotkey.OnValueChanged += () => { Input.RegisterKey(Settings.StartNavigationHotkey); };
-        Settings.StopNavigationHotkey.OnValueChanged += () => { Input.RegisterKey(Settings.StopNavigationHotkey); };
-        
-        // Try to get Radar plugin methods from PluginBridge
         try
         {
-            _radarLookForRoute = GameController.PluginBridge.GetMethod<Func<Vector2, Action<List<Vector2i>>, CancellationToken, Task>>("Radar.LookForRoute");
-            _radarClusterTarget = GameController.PluginBridge.GetMethod<Func<string, int, Vector2[]>>("Radar.ClusterTarget");
+            _pathfinder = new PathfindingEngine(this);
+            _obstacleHandler = new ObstacleHandler(this);
+            _stuckDetector = new StuckDetector(this);
             
-            if (_radarLookForRoute != null)
+            // Register hotkeys
+            Input.RegisterKey(Settings.StartNavigationHotkey);
+            Input.RegisterKey(Settings.StopNavigationHotkey);
+              // Hook up hotkey events
+            Settings.StartNavigationHotkey.OnValueChanged += () => { Input.RegisterKey(Settings.StartNavigationHotkey); };
+            Settings.StopNavigationHotkey.OnValueChanged += () => { Input.RegisterKey(Settings.StopNavigationHotkey); };
+            
+            // Try to get Radar plugin methods from PluginBridge
+            try
             {
-                LogMessage("Successfully connected to Radar plugin!");
+                _radarLookForRoute = GameController.PluginBridge.GetMethod<Func<Vector2, Action<List<Vector2i>>, CancellationToken, Task>>("Radar.LookForRoute");
+                _radarClusterTarget = GameController.PluginBridge.GetMethod<Func<string, int, Vector2[]>>("Radar.ClusterTarget");
+                
+                if (_radarLookForRoute != null)
+                {
+                    LogMessage("Successfully connected to Radar plugin!");
+                }
+                else
+                {
+                    LogMessage("Radar plugin not found - using fallback pathfinding");
+                }
             }
-            else
+            catch (Exception ex)
             {
-                LogMessage("Radar plugin not found - using fallback pathfinding");
+                LogError($"Failed to connect to Radar plugin: {ex.Message}");
             }
+              return true;
         }
         catch (Exception ex)
         {
-            LogError($"Failed to connect to Radar plugin: {ex.Message}");
+            LogError($"Failed to initialize AutoNavigator: {ex.Message}");
+            return false;
         }
-        
-        return true;
     }
 
     public override void AreaChange(AreaInstance area)
@@ -143,7 +182,9 @@ public partial class AutoNavigator : BaseSettingsPlugin<AutoNavigatorSettings>
         StopNavigation();
         _pathfinder?.ClearCache();
         _obstacleHandler?.Reset();
-    }    public override void Render()
+    }
+
+    public override void Render()
     {
         if (!Settings.Enable)
             return;
@@ -153,7 +194,7 @@ public partial class AutoNavigator : BaseSettingsPlugin<AutoNavigatorSettings>
         {
             if (!_isNavigating)
             {
-                StartExploration();
+                StartMapExploration();
             }
         }
 
@@ -162,10 +203,10 @@ public partial class AutoNavigator : BaseSettingsPlugin<AutoNavigatorSettings>
             StopNavigation();
         }
 
-        // Main exploration and combat loop
+        // Main exploration and combat loop - Python bot style priority system
         if (_isNavigating)
         {
-            UpdateExplorationAndCombat();
+            UpdateMapperRoutine();
         }
 
         // Draw debug information
@@ -179,174 +220,73 @@ public partial class AutoNavigator : BaseSettingsPlugin<AutoNavigatorSettings>
         {
             DrawCurrentTarget();
         }
-    }    private void StartNavigationToNearestTarget()
+        
+        // Draw exploration points
+        if (Settings.DrawExplorationPoints && _discoveryPoints.Count > 0)
+        {
+            DrawExplorationPoints();
+        }
+    }
+
+    private void StartMapExploration()
     {
-        // This method is no longer needed - replaced by StartExploration
-        StartExploration();
-    }private void StopNavigation()
+        _isNavigating = true;
+        _isExploring = true;
+        _mapCompleted = false;
+        _startTime = DateTime.Now;
+        _navigationCts = new CancellationTokenSource();
+        
+        // Clear previous exploration data
+        _discoveryPoints.Clear();
+        _exploredAreas.Clear();
+        _currentDiscoveryIndex = 0;
+        
+        // Generate initial discovery points using TSP
+        GenerateDiscoveryPoints();
+        
+        LogMessage("Starting map exploration with TSP pathfinding - Python bot style!");
+    }
+
+    private void StopNavigation()
     {
         _isNavigating = false;
         _isExploring = false;
-        _isCombating = false;
+        _mapCompleted = false;
         _currentTarget = null;
-        _explorationTarget = Vector2.Zero;
+        _currentExplorationTarget = Vector2.Zero;
         _navigationCts?.Cancel();
         _navigationCts = new CancellationTokenSource();
         
         LogMessage("Navigation stopped");
     }
 
-    private Vector2 GetPlayerPosition()
-    {
-        try
-        {
-            var player = GameController.Game.IngameState.Data.LocalPlayer;
-            var playerPositionComponent = player?.GetComponent<Positioned>();
-            if (playerPositionComponent == null)
-                return Vector2.Zero;
-            
-            return new Vector2(playerPositionComponent.GridX, playerPositionComponent.GridY);
-        }
-        catch
-        {
-            return Vector2.Zero;
-        }
-    }    // Drawing methods
-    private void DrawCurrentTarget()
-    {
-        if (_currentTarget == null || !IsTargetValid(_currentTarget))
-            return;
-
-        try
-        {
-            var targetPos = GetEntityPosition(_currentTarget);
-            var screenPos = GameController.IngameState.Camera.WorldToScreen(
-                new Vector3(targetPos.X * GridToWorldMultiplier, targetPos.Y * GridToWorldMultiplier, 0));
-
-            // Draw target circle
-            Graphics.DrawCircle(screenPos, 20, Color.Red, 3);
-            
-            // Draw target name/info
-            Graphics.DrawText($"Target: {_currentTarget.Path}", 
-                new Vector2(screenPos.X + 25, screenPos.Y), Color.Red);
-        }
-        catch (Exception ex)
-        {
-            LogError($"Error drawing current target: {ex.Message}");
-        }
-    }    private void DrawDebugInfo()
-    {
-        var startY = 100;
-        var lineHeight = 20;
-        var currentY = startY;
-
-        Graphics.DrawText($"AutoNavigator Debug Info:", new Vector2(10, currentY), Settings.DebugTextColor);
-        currentY += lineHeight;
-
-        Graphics.DrawText($"Navigation Active: {_isNavigating}", new Vector2(10, currentY), Settings.DebugTextColor);
-        currentY += lineHeight;
-
-        Graphics.DrawText($"Exploring: {_isExploring}", new Vector2(10, currentY), Settings.DebugTextColor);
-        currentY += lineHeight;
-
-        Graphics.DrawText($"Radar Connected: {_radarClusterTarget != null}", new Vector2(10, currentY), Settings.DebugTextColor);
-        currentY += lineHeight;
-
-        Graphics.DrawText($"Current Target: {(_currentTarget?.Path ?? "None")}", new Vector2(10, currentY), Settings.DebugTextColor);
-        currentY += lineHeight;
-
-        Graphics.DrawText($"Nearby Monsters: {_nearbyMonsters.Count}", new Vector2(10, currentY), Settings.DebugTextColor);
-        currentY += lineHeight;
-
-        Graphics.DrawText($"Exploration Target: {_explorationTarget}", new Vector2(10, currentY), Settings.DebugTextColor);
-        currentY += lineHeight;
-
-        Graphics.DrawText($"Explored Areas: {_exploredAreas.Count}", new Vector2(10, currentY), Settings.DebugTextColor);
-        currentY += lineHeight;
-
-        var playerPos = GetPlayerPosition();
-        Graphics.DrawText($"Player Position: {playerPos}", new Vector2(10, currentY), Settings.DebugTextColor);
-        currentY += lineHeight;
-
-        if (_currentTarget != null)
-        {
-            var targetPos = GetEntityPosition(_currentTarget);
-            var distance = Vector2.Distance(playerPos, targetPos);
-            Graphics.DrawText($"Distance to Target: {distance:F1}", new Vector2(10, currentY), Settings.DebugTextColor);
-            currentY += lineHeight;
-        }
-
-        // Show last action times
-        var timeSinceLastAction = (DateTime.Now - _lastActionTime).TotalMilliseconds;
-        Graphics.DrawText($"Time Since Last Action: {timeSinceLastAction:F0}ms", new Vector2(10, currentY), Settings.DebugTextColor);
-        currentY += lineHeight;
-
-        var timeSinceLastMovement = (DateTime.Now - _lastMovementTime).TotalMilliseconds;
-        Graphics.DrawText($"Time Since Last Movement: {timeSinceLastMovement:F0}ms", new Vector2(10, currentY), Settings.DebugTextColor);
-        currentY += lineHeight;
-
-        var timeSinceLastAttack = (DateTime.Now - _lastAttackTime).TotalMilliseconds;
-        Graphics.DrawText($"Time Since Last Attack: {timeSinceLastAttack:F0}ms", new Vector2(10, currentY), Settings.DebugTextColor);
-    }public override void DrawSettings()
-    {
-        base.DrawSettings();
-        
-        if (ImGuiNET.ImGui.Button("Start Exploration"))
-        {
-            StartExploration();
-        }
-        
-        ImGuiNET.ImGui.SameLine();
-        
-        if (ImGuiNET.ImGui.Button("Stop Navigation"))
-        {
-            StopNavigation();
-        }
-        
-        ImGuiNET.ImGui.Separator();
-        
-        if (ImGuiNET.ImGui.CollapsingHeader("Status"))
-        {
-            ImGuiNET.ImGui.Text($"Navigation Active: {_isNavigating}");
-            ImGuiNET.ImGui.Text($"Exploring: {_isExploring}");
-            ImGuiNET.ImGui.Text($"Current Target: {(_currentTarget?.Path ?? "None")}");
-            ImGuiNET.ImGui.Text($"Nearby Monsters: {_nearbyMonsters.Count}");
-            ImGuiNET.ImGui.Text($"Explored Areas: {_exploredAreas.Count}");
-        }
-    }
-
-    public override void OnClose()
-    {
-        StopNavigation();
-        base.OnClose();
-    }
-
-    private void StartExploration()
-    {
-        _isNavigating = true;
-        _isExploring = true;
-        _isCombating = false;
-        _navigationCts = new CancellationTokenSource();
-        _exploredAreas.Clear();
-        
-        LogMessage("Starting map exploration and monster hunting!");
-    }    private void UpdateExplorationAndCombat()
+    // Main exploration routine - Python bot style priority system
+    private void UpdateMapperRoutine()
     {
         var playerPos = GetPlayerPosition();
         if (playerPos == Vector2.Zero)
             return;
 
-        // Human-like action throttling - prevent too many actions
+        // Check if map run time exceeded
+        if ((DateTime.Now - _startTime).TotalSeconds > Settings.MaxMapRunTime.Value)
+        {
+            LogMessage("Map run time exceeded, stopping exploration");
+            StopNavigation();
+            return;
+        }
+
+        // Human-like action throttling
         if (DateTime.Now - _lastActionTime < TimeSpan.FromMilliseconds(Settings.MovementDelay.Value))
             return;
 
         // Update explored areas
         UpdateExploredAreas(playerPos);
 
-        // Priority 1: Combat - Look for nearby monsters more frequently
-        if (DateTime.Now - _lastTargetScanTime > TimeSpan.FromMilliseconds(500)) // Scan more frequently
+        // Python bot priority system:
+        // Priority 1: Combat - Scan for monsters frequently
+        if (DateTime.Now - _lastTargetScanTime > TimeSpan.FromMilliseconds(400))
         {
-            ScanForMonsters(playerPos);
+            ScanForMonstersWithPriority(playerPos);
             _lastTargetScanTime = DateTime.Now;
         }
 
@@ -363,7 +303,7 @@ public partial class AutoNavigator : BaseSettingsPlugin<AutoNavigatorSettings>
             }
             else if (distanceToTarget <= Settings.MonsterDetectionRadius.Value)
             {
-                // Move towards target with delay
+                // Move towards target
                 MoveTowards(targetPos);
                 return;
             }
@@ -372,36 +312,199 @@ public partial class AutoNavigator : BaseSettingsPlugin<AutoNavigatorSettings>
                 // Target too far, clear it
                 _currentTarget = null;
             }
+        }        // Priority 3: Handle obstacles (doors, transitions)
+        if (Settings.AutoOpenDoors && _obstacleHandler != null && _obstacleHandler.CheckAndOpenDoors(playerPos))
+        {
+            return;
         }
 
-        // Priority 3: Exploration - Find unexplored areas more frequently
-        if (DateTime.Now - _lastExplorationUpdate > TimeSpan.FromSeconds(2)) // Shorter delay
+        if (Settings.AutoUseTransitions && _obstacleHandler != null && _obstacleHandler.CheckAndUseTransitions(playerPos))
+        {
+            return;
+        }
+
+        // Priority 4: Exploration - TSP based discovery
+        if (DateTime.Now - _lastExplorationUpdate > TimeSpan.FromMilliseconds(Settings.ExplorationUpdateInterval.Value))
         {
             UpdateExplorationTarget(playerPos);
             _lastExplorationUpdate = DateTime.Now;
         }
 
-        // Move towards exploration target with caution
-        if (_explorationTarget != Vector2.Zero)
+        // Move towards exploration target
+        if (_currentExplorationTarget != Vector2.Zero)
         {
-            var distanceToExploration = Vector2.Distance(playerPos, _explorationTarget);
-            if (distanceToExploration > 10f) // Smaller tolerance for faster movement
+            var distanceToExploration = Vector2.Distance(playerPos, _currentExplorationTarget);
+            if (distanceToExploration > Settings.WaypointTolerance.Value)
             {
-                MoveTowards(_explorationTarget);
+                MoveTowards(_currentExplorationTarget);
             }
             else
             {
-                // Reached exploration target, find new one
-                _explorationTarget = Vector2.Zero;
+                // Reached exploration target, move to next discovery point
+                MoveToNextDiscoveryPoint(playerPos);
             }
         }
-    }private void ScanForMonsters(Vector2 playerPos)
+        else
+        {
+            // No exploration target, generate new discovery points or check completion
+            if (IsMapCompleted(playerPos))
+            {
+                OnMapFinished();
+            }
+            else
+            {
+                GenerateDiscoveryPoints();
+                if (_discoveryPoints.Count > 0)
+                {
+                    _currentExplorationTarget = _discoveryPoints[0];
+                }
+            }
+        }
+    }
+
+    // TSP-based discovery point generation - Python bot style
+    private void GenerateDiscoveryPoints()
+    {
+        var playerPos = GetPlayerPosition();
+        if (playerPos == Vector2.Zero) return;
+
+        _discoveryPoints.Clear();
+        var tempPoints = new List<Vector2>();
+
+        // Generate points in a grid pattern around unexplored areas
+        var radius = Settings.ExplorationRadius.Value;
+        var pointCount = Settings.TSPPointCount.Value;
+        
+        // Create exploration points in 8 directions
+        for (int angle = 0; angle < 360; angle += 45)
+        {
+            var radians = angle * Math.PI / 180;
+            var direction = new Vector2((float)Math.Cos(radians), (float)Math.Sin(radians));
+            
+            // Multiple distances in each direction
+            for (int distance = 30; distance <= radius; distance += 20)
+            {
+                var point = playerPos + direction * distance;
+                
+                // Only add if not already explored
+                if (!IsAreaExplored(point, 25f))
+                {
+                    tempPoints.Add(point);
+                }
+            }
+        }
+
+        // If we have points, optimize with TSP
+        if (tempPoints.Count > 0)
+        {
+            // Limit to max point count for performance
+            if (tempPoints.Count > pointCount)
+            {
+                // Sort by distance and take closest ones
+                tempPoints = tempPoints
+                    .OrderBy(p => Vector2.Distance(playerPos, p))
+                    .Take(pointCount)
+                    .ToList();
+            }
+
+            // Apply TSP optimization if enabled
+            if (Settings.OptimizePathWithTSP && tempPoints.Count > 3)
+            {
+                _discoveryPoints = OptimizePointsWithTSP(tempPoints, playerPos);
+            }
+            else
+            {
+                // Simple nearest neighbor ordering
+                _discoveryPoints = OrderPointsByDistance(tempPoints, playerPos);
+            }
+
+            _currentDiscoveryIndex = 0;
+            
+            if (Settings.DebugMode)
+            {
+                LogMessage($"Generated {_discoveryPoints.Count} discovery points");
+            }
+        }
+    }
+
+    // TSP optimization for discovery points
+    private List<Vector2> OptimizePointsWithTSP(List<Vector2> points, Vector2 startPoint)
+    {
+        if (points.Count <= 2) return points;
+
+        var optimized = new List<Vector2>();
+        var remaining = new List<Vector2>(points);
+        var current = startPoint;
+
+        // Find nearest starting point
+        var nearest = remaining.OrderBy(p => Vector2.Distance(current, p)).First();
+        optimized.Add(nearest);
+        remaining.Remove(nearest);
+        current = nearest;
+
+        // Continue with nearest neighbor
+        while (remaining.Count > 0)
+        {
+            nearest = remaining.OrderBy(p => Vector2.Distance(current, p)).First();
+            optimized.Add(nearest);
+            remaining.Remove(nearest);
+            current = nearest;
+        }
+
+        return optimized;
+    }
+
+    private List<Vector2> OrderPointsByDistance(List<Vector2> points, Vector2 startPoint)
+    {
+        return points.OrderBy(p => Vector2.Distance(startPoint, p)).ToList();
+    }
+
+    private void UpdateExplorationTarget(Vector2 playerPos)
+    {
+        if (_discoveryPoints.Count == 0)
+        {
+            GenerateDiscoveryPoints();
+            return;
+        }
+
+        if (_currentDiscoveryIndex < _discoveryPoints.Count)
+        {
+            _currentExplorationTarget = _discoveryPoints[_currentDiscoveryIndex];
+        }
+        else
+        {
+            // Finished current discovery points, generate new ones
+            GenerateDiscoveryPoints();
+            if (_discoveryPoints.Count > 0)
+            {
+                _currentExplorationTarget = _discoveryPoints[0];
+            }
+        }
+    }
+
+    private void MoveToNextDiscoveryPoint(Vector2 playerPos)
+    {
+        _currentDiscoveryIndex++;
+        if (_currentDiscoveryIndex < _discoveryPoints.Count)
+        {
+            _currentExplorationTarget = _discoveryPoints[_currentDiscoveryIndex];
+            if (Settings.DebugMode)
+            {
+                LogMessage($"Moving to discovery point {_currentDiscoveryIndex}/{_discoveryPoints.Count}: {_currentExplorationTarget}");
+            }
+        }
+        else
+        {
+            _currentExplorationTarget = Vector2.Zero;
+        }
+    }    // Python bot style monster scanning with priority system
+    private void ScanForMonstersWithPriority(Vector2 playerPos)
     {
         _nearbyMonsters.Clear();
         
         try
         {
-            // Use Radar to find monsters if available
+            // Use Radar if available, otherwise fallback to manual scanning
             if (_radarClusterTarget != null)
             {
                 try
@@ -409,20 +512,20 @@ public partial class AutoNavigator : BaseSettingsPlugin<AutoNavigatorSettings>
                     var radarMonsters = _radarClusterTarget("monsters", (int)Settings.MonsterDetectionRadius.Value);
                     if (radarMonsters != null && radarMonsters.Length > 0)
                     {
-                        // Convert radar results to our monster list (we need to find the actual entities)
-                        var allEntities = GameController.EntityListWrapper.Entities;
-                        
-                        foreach (var radarPos in radarMonsters)
+                        var allEntities = GameController?.EntityListWrapper?.Entities;
+                        if (allEntities != null)
                         {
-                            // Find entities near radar positions
-                            var nearbyEntity = allEntities
-                                .Where(e => IsValidMonster(e))
-                                .Where(e => Vector2.Distance(GetEntityPosition(e), radarPos) < 10f)
-                                .FirstOrDefault();
-                            
-                            if (nearbyEntity != null)
+                            foreach (var radarPos in radarMonsters)
                             {
-                                _nearbyMonsters.Add(nearbyEntity);
+                                var nearbyEntity = allEntities
+                                    .Where(e => IsValidMonster(e))
+                                    .Where(e => Vector2.Distance(GetEntityPosition(e), radarPos) < 15f)
+                                    .FirstOrDefault();
+                                
+                                if (nearbyEntity != null)
+                                {
+                                    _nearbyMonsters.Add(nearbyEntity);
+                                }
                             }
                         }
                     }
@@ -433,47 +536,46 @@ public partial class AutoNavigator : BaseSettingsPlugin<AutoNavigatorSettings>
                 }
             }
             
-            // Fallback: Manual entity scanning if Radar doesn't work
+            // Fallback: Manual entity scanning
             if (_nearbyMonsters.Count == 0)
             {
-                var allEntities = GameController.EntityListWrapper.Entities;
-
-                foreach (var entity in allEntities)
+                var allEntities = GameController?.EntityListWrapper?.Entities;
+                if (allEntities != null)
                 {
-                    if (!IsValidMonster(entity))
-                        continue;
-
-                    var entityPos = GetEntityPosition(entity);
-                    if (entityPos == Vector2.Zero)
-                        continue;
-
-                    var distance = Vector2.Distance(playerPos, entityPos);
-                    if (distance <= Settings.MonsterDetectionRadius.Value)
+                    foreach (var entity in allEntities)
                     {
-                        _nearbyMonsters.Add(entity);
+                        if (!IsValidMonster(entity))
+                            continue;
+
+                        var entityPos = GetEntityPosition(entity);
+                        if (entityPos == Vector2.Zero)
+                            continue;
+
+                        var distance = Vector2.Distance(playerPos, entityPos);
+                        if (distance <= Settings.MonsterDetectionRadius.Value)
+                        {
+                            _nearbyMonsters.Add(entity);
+                        }
                     }
                 }
             }
 
-            // Prioritize monsters (stronger/rarer first)
+            // Prioritize monsters - Python bot style priority system
             if (_nearbyMonsters.Count > 0)
             {
                 _currentTarget = _nearbyMonsters
+                    .Where(e => ShouldTargetMonster(e))
                     .OrderByDescending(e => GetMonsterPriority(e)) // Highest priority first
                     .ThenBy(e => Vector2.Distance(playerPos, GetEntityPosition(e))) // Then by distance
-                    .First();
+                    .FirstOrDefault();
 
-                if (Settings.DebugMode)
+                if (_currentTarget != null && Settings.DebugMode)
                 {
-                    LogMessage($"Target acquired: {_currentTarget.Path} at distance {Vector2.Distance(playerPos, GetEntityPosition(_currentTarget)):F1}");
+                    LogMessage($"Target acquired: {_currentTarget.Path} (Priority: {GetMonsterPriority(_currentTarget)}) at distance {Vector2.Distance(playerPos, GetEntityPosition(_currentTarget)):F1}");
                 }
             }
             else if (_currentTarget != null)
             {
-                if (Settings.DebugMode)
-                {
-                    LogMessage("No monsters in range, clearing target");
-                }
                 _currentTarget = null;
             }
         }
@@ -483,23 +585,57 @@ public partial class AutoNavigator : BaseSettingsPlugin<AutoNavigatorSettings>
         }
     }
 
+    // Python bot style monster priority system
     private int GetMonsterPriority(Entity entity)
     {
         try
         {
             var path = entity.Path?.ToLower() ?? "";
+            var renderName = entity.RenderName?.ToLower() ?? "";
             
-            // Prioritize rare/strong monsters
-            if (path.Contains("unique") || path.Contains("boss")) return 100;
-            if (path.Contains("rare") || path.Contains("magic")) return 50;
-            if (path.Contains("champion") || path.Contains("elite")) return 30;
+            // Highest priority - Unique/Boss monsters
+            if (path.Contains("unique") || path.Contains("boss") || renderName.Contains("boss"))
+                return 100;
+            
+            // High priority - Rare monsters (force_kill_rares equivalent)
+            if (Settings.ForceKillRares && (path.Contains("rare") || entity.IsHostile))
+                return 80;
+            
+            // Medium priority - Magic monsters (force_kill_blues equivalent) 
+            if (Settings.ForceKillBlues && (path.Contains("magic") || path.Contains("champion")))
+                return 60;
+            
+            // TODO: Future implementation - Essence monsters, Breach monsters, etc.
+            // if (path.Contains("essence")) return 70;
+            // if (path.Contains("breach")) return 65;
             
             // Regular monsters
-            return 10;
+            return 20;
         }
         catch
         {
-            return 1;
+            return 10;
+        }
+    }
+
+    private bool ShouldTargetMonster(Entity entity)
+    {
+        try
+        {
+            var priority = GetMonsterPriority(entity);
+            
+            // Always target high priority monsters
+            if (priority >= 80) return true;
+            
+            // Target medium priority if force kill settings are enabled
+            if (priority >= 60 && Settings.ForceKillBlues) return true;
+            if (priority >= 20 && Settings.ForceKillRares) return true;
+            
+            return false;
+        }
+        catch
+        {
+            return false;
         }
     }
 
@@ -521,7 +657,8 @@ public partial class AutoNavigator : BaseSettingsPlugin<AutoNavigatorSettings>
             
             // Skip common non-monster entities
             if (path.Contains("player") || path.Contains("npc") || 
-                path.Contains("decoration") || path.Contains("effect"))
+                path.Contains("decoration") || path.Contains("effect") ||
+                path.Contains("portal") || path.Contains("waypoint"))
                 return false;
 
             return true;
@@ -530,14 +667,16 @@ public partial class AutoNavigator : BaseSettingsPlugin<AutoNavigatorSettings>
         {
             return false;
         }
-    }    private void AttackTarget(Entity target)
+    }
+
+    private void AttackTarget(Entity target)
     {
-        // Add significant delay between attacks to avoid "too many actions"
+        // Rate limiting for attacks
         if (DateTime.Now - _lastAttackTime < TimeSpan.FromMilliseconds(Settings.AttackDelay.Value))
             return;
 
-        // Add additional random delay to be more human-like
-        var randomDelay = _random.Next(100, Settings.ActionRandomization.Value);
+        // Human-like random delay
+        var randomDelay = _random.Next(50, Settings.ActionRandomization.Value);
         if (DateTime.Now - _lastActionTime < TimeSpan.FromMilliseconds(randomDelay))
             return;
 
@@ -552,11 +691,11 @@ public partial class AutoNavigator : BaseSettingsPlugin<AutoNavigatorSettings>
             if (screenPos.X >= windowRect.Left && screenPos.X <= windowRect.Right &&
                 screenPos.Y >= windowRect.Top && screenPos.Y <= windowRect.Bottom)
             {
-                // Attack with left click - but only once per target acquisition
+                // Attack with left click
                 Input.SetCursorPos(screenPos);
                 
-                // Add small delay before click to be more human-like
-                Task.Delay(50 + _random.Next(50)).ContinueWith(_ => 
+                // Human-like delay before click
+                Task.Delay(30 + _random.Next(30)).ContinueWith(_ => 
                 {
                     Input.Click(MouseButtons.Left);
                 });
@@ -566,7 +705,7 @@ public partial class AutoNavigator : BaseSettingsPlugin<AutoNavigatorSettings>
 
                 if (Settings.DebugMode)
                 {
-                    LogMessage($"Attacking target at {screenPos}");
+                    LogMessage($"Attacking {target.RenderName ?? "Monster"} at {screenPos}");
                 }
             }
         }
@@ -574,111 +713,21 @@ public partial class AutoNavigator : BaseSettingsPlugin<AutoNavigatorSettings>
         {
             LogError($"Error attacking target: {ex.Message}");
         }
-    }    private void UpdateExplorationTarget(Vector2 playerPos)
-    {
-        // Smart exploration logic - find the direction with least explored areas
-        var bestDirection = Vector2.Zero;
-        var maxUnexploredScore = 0f;
-        
-        // Check 8 directions around the player
-        for (int angle = 0; angle < 360; angle += 45)
-        {
-            var radians = angle * Math.PI / 180;
-            var direction = new Vector2((float)Math.Cos(radians), (float)Math.Sin(radians));
-            
-            // Check multiple distances in this direction
-            var unexploredScore = 0f;
-            for (int distance = 20; distance <= Settings.ExplorationRadius.Value; distance += 10)
-            {
-                var checkPos = playerPos + direction * distance;
-                
-                // Higher score for areas we haven't been to
-                if (!IsAreaExplored(checkPos, 15f))
-                {
-                    unexploredScore += distance; // Prefer farther unexplored areas
-                }
-            }
-            
-            // Prefer this direction if it has more unexplored areas
-            if (unexploredScore > maxUnexploredScore)
-            {
-                maxUnexploredScore = unexploredScore;
-                bestDirection = direction;
-            }
-        }
-        
-        // Set exploration target in the best direction
-        if (bestDirection != Vector2.Zero)
-        {
-            var targetDistance = Math.Min(40f, Settings.ExplorationRadius.Value * 0.8f);
-            _explorationTarget = playerPos + bestDirection * targetDistance;
-            
-            if (Settings.DebugMode)
-            {
-                LogMessage($"Smart exploration target: {_explorationTarget} (score: {maxUnexploredScore})");
-            }
-        }
-        else
-        {
-            // Fallback: pick a random unexplored direction
-            for (int attempts = 0; attempts < 8; attempts++)
-            {
-                var angle = _random.NextDouble() * 2 * Math.PI;
-                var distance = _random.Next(25, (int)Settings.ExplorationRadius.Value);
-                
-                var targetPos = playerPos + new Vector2(
-                    (float)(Math.Cos(angle) * distance),
-                    (float)(Math.Sin(angle) * distance));
-
-                if (!IsAreaExplored(targetPos, 15f))
-                {
-                    _explorationTarget = targetPos;
-                    
-                    if (Settings.DebugMode)
-                    {
-                        LogMessage($"Fallback exploration target: {targetPos}");
-                    }
-                    break;
-                }
-            }
-        }
     }
 
-    private void UpdateExploredAreas(Vector2 playerPos)
+    private void MoveTowards(Vector2 targetPos)
     {
-        // Add current position to explored areas
-        if (_exploredAreas.Count == 0 || 
-            Vector2.Distance(_lastPlayerPosition, playerPos) > 10f)
-        {
-            _exploredAreas.Add(playerPos);
-            _lastPlayerPosition = playerPos;
-
-            // Limit explored areas list size
-            if (_exploredAreas.Count > 100)
-            {
-                _exploredAreas.RemoveAt(0);
-            }
-        }
-    }
-
-    private bool IsAreaExplored(Vector2 position, float radius)
-    {
-        return _exploredAreas.Any(explored => 
-            Vector2.Distance(explored, position) < radius);
-    }    private void MoveTowards(Vector2 targetPos)
-    {
-        // Prevent too frequent movement
+        // Rate limiting for movement
         if (DateTime.Now - _lastMovementTime < TimeSpan.FromMilliseconds(Settings.MovementDelay.Value))
             return;
 
-        // Add random delay to movement to be more human-like
-        var randomDelay = _random.Next(100, Settings.ActionRandomization.Value);
+        // Human-like random delay
+        var randomDelay = _random.Next(50, Settings.ActionRandomization.Value);
         if (DateTime.Now - _lastActionTime < TimeSpan.FromMilliseconds(randomDelay))
             return;
 
         try
         {
-            // Simple direct movement - no complex pathfinding
             var screenPos = GameController.IngameState.Camera.WorldToScreen(
                 new Vector3(targetPos.X * GridToWorldMultiplier, targetPos.Y * GridToWorldMultiplier, 0));
             
@@ -688,17 +737,18 @@ public partial class AutoNavigator : BaseSettingsPlugin<AutoNavigatorSettings>
         {
             LogError($"Error moving towards target: {ex.Message}");
         }
-    }    private void ExecuteMovement(Vector2 screenPos, Vector2 worldPos)
+    }
+
+    private void ExecuteMovement(Vector2 screenPos, Vector2 worldPos)
     {
         var windowRect = GameController.Window.GetWindowRectangle();
         if (screenPos.X >= windowRect.Left && screenPos.X <= windowRect.Right &&
             screenPos.Y >= windowRect.Top && screenPos.Y <= windowRect.Bottom)
         {
-            // Human-like movement: set cursor position first, then wait, then click
+            // Human-like movement
             Input.SetCursorPos(screenPos);
             
-            // Add small random delay before clicking (much faster)
-            var clickDelay = 50 + _random.Next(50, 150);
+            var clickDelay = Settings.ClickDelay.Value + _random.Next(50);
             Task.Delay(clickDelay).ContinueWith(_ => 
             {
                 Input.Click(MouseButtons.Left);
@@ -709,8 +759,94 @@ public partial class AutoNavigator : BaseSettingsPlugin<AutoNavigatorSettings>
 
             if (Settings.DebugMode)
             {
-                LogMessage($"Moving towards: {worldPos} (screen: {screenPos}, delay: {clickDelay}ms)");
+                LogMessage($"Moving towards: {worldPos} (screen: {screenPos})");
             }
+        }
+    }
+
+    private void UpdateExploredAreas(Vector2 playerPos)
+    {
+        // Add current position to explored areas
+        if (_exploredAreas.Count == 0 || 
+            Vector2.Distance(_lastPlayerPosition, playerPos) > 15f)
+        {
+            _exploredAreas.Add(playerPos);
+            _lastPlayerPosition = playerPos;
+
+            // Limit explored areas list size for performance
+            if (_exploredAreas.Count > 200)
+            {
+                _exploredAreas.RemoveRange(0, 50); // Remove oldest 50 entries
+            }
+        }
+    }
+
+    private bool IsAreaExplored(Vector2 position, float radius)
+    {
+        return _exploredAreas.Any(explored => 
+            Vector2.Distance(explored, position) < radius);
+    }
+
+    // Map completion check - Python bot style
+    private bool IsMapCompleted(Vector2 playerPos)
+    {
+        // Check exploration percentage
+        var explorationPercent = CalculateExplorationPercent();
+        if (explorationPercent >= Settings.DiscoveryPercent.Value)
+        {
+            if (Settings.DebugMode)
+            {
+                LogMessage($"Map exploration completed: {explorationPercent:P1} >= {Settings.DiscoveryPercent.Value:P1}");
+            }
+            return true;
+        }
+
+        // TODO: Future implementation - check for specific completion criteria
+        // - No more discovery points available
+        // - All high priority targets cleared
+        // - Ritual completion check
+        // - Boss killed check
+
+        return false;
+    }
+
+    private float CalculateExplorationPercent()
+    {
+        // Simple estimation based on explored areas vs total area
+        // In a real implementation, this would use terrain data
+        var totalEstimatedArea = Math.PI * Math.Pow(Settings.ExplorationRadius.Value, 2);
+        var exploredArea = _exploredAreas.Count * Math.PI * Math.Pow(25f, 2); // 25f radius per explored point
+        
+        return Math.Min(1.0f, (float)(exploredArea / totalEstimatedArea));
+    }
+
+    private void OnMapFinished()
+    {
+        _mapCompleted = true;
+        LogMessage($"Map exploration completed! Explored {_exploredAreas.Count} areas in {(DateTime.Now - _startTime).TotalMinutes:F1} minutes");
+        
+        // TODO: Future implementation
+        // - Open portal and return to hideout
+        // - Stash management
+        // - Map preparation for next run
+        
+        StopNavigation();
+    }
+
+    private Vector2 GetPlayerPosition()
+    {
+        try
+        {
+            var player = GameController.Game.IngameState.Data.LocalPlayer;
+            var playerPositionComponent = player?.GetComponent<Positioned>();
+            if (playerPositionComponent == null)
+                return Vector2.Zero;
+            
+            return new Vector2(playerPositionComponent.GridX, playerPositionComponent.GridY);
+        }
+        catch
+        {
+            return Vector2.Zero;
         }
     }
 
@@ -724,14 +860,15 @@ public partial class AutoNavigator : BaseSettingsPlugin<AutoNavigatorSettings>
         {
             return false;
         }
-    }
-
-    private Vector2 GetEntityPosition(Entity entity)
+    }    private Vector2 GetEntityPosition(Entity entity)
     {
         try
         {
+            if (entity?.IsValid != true)
+                return Vector2.Zero;
+
             var render = entity.GetComponent<Render>();
-            if (render != null)
+            if (render != null && render.Pos != null)
             {
                 return new Vector2(render.Pos.X / GridToWorldMultiplier,
                                    render.Pos.Y / GridToWorldMultiplier);
@@ -745,9 +882,162 @@ public partial class AutoNavigator : BaseSettingsPlugin<AutoNavigatorSettings>
         }
         catch (Exception ex)
         {
-            LogError($"Error getting entity position: {ex.Message}");
+            if (Settings.DebugMode)
+                LogError($"Error getting entity position: {ex.Message}");
         }
 
         return Vector2.Zero;
+    }
+
+    // Drawing methods
+    private void DrawCurrentTarget()
+    {
+        if (_currentTarget == null || !IsTargetValid(_currentTarget))
+            return;
+
+        try
+        {
+            var targetPos = GetEntityPosition(_currentTarget);
+            var screenPos = GameController.IngameState.Camera.WorldToScreen(
+                new Vector3(targetPos.X * GridToWorldMultiplier, targetPos.Y * GridToWorldMultiplier, 0));
+
+            // Draw target circle
+            Graphics.DrawCircle(screenPos, 25, Color.Red, 3);
+            
+            // Draw target priority and name
+            var priority = GetMonsterPriority(_currentTarget);
+            Graphics.DrawText($"Target: {_currentTarget.RenderName ?? "Monster"} (P:{priority})", 
+                new Vector2(screenPos.X + 30, screenPos.Y), Color.Red);
+        }
+        catch (Exception ex)
+        {
+            LogError($"Error drawing current target: {ex.Message}");
+        }
+    }    private void DrawExplorationPoints()
+    {
+        try
+        {
+            for (int i = 0; i < _discoveryPoints.Count; i++)
+            {
+                var point = _discoveryPoints[i];
+                var screenPos = GameController.IngameState.Camera.WorldToScreen(
+                    new Vector3(point.X * GridToWorldMultiplier, point.Y * GridToWorldMultiplier, 0));
+
+                var color = i == _currentDiscoveryIndex ? Color.Yellow : Settings.ExplorationColor.Value;
+                Graphics.DrawCircle(screenPos, 10, color, 2);
+                
+                if (i == _currentDiscoveryIndex)
+                {
+                    Graphics.DrawText($"Target: {i + 1}/{_discoveryPoints.Count}", 
+                        new Vector2(screenPos.X + 15, screenPos.Y), Color.Yellow);
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            LogError($"Error drawing exploration points: {ex.Message}");
+        }
+    }    private void DrawDebugInfo()
+    {
+        try
+        {
+            var startY = 100;
+            var lineHeight = 18;
+            var currentY = startY;
+
+            Graphics.DrawText("AutoNavigator - Python Bot Style", new Vector2(10, currentY), Settings.DebugTextColor.Value);
+            currentY += lineHeight;
+
+            Graphics.DrawText($"Navigation: {_isNavigating} | Exploring: {_isExploring}", new Vector2(10, currentY), Settings.DebugTextColor.Value);
+            currentY += lineHeight;
+
+            Graphics.DrawText($"Current Target: {(_currentTarget?.RenderName ?? "None")}", new Vector2(10, currentY), Settings.DebugTextColor.Value);
+            currentY += lineHeight;
+
+            Graphics.DrawText($"Nearby Monsters: {_nearbyMonsters.Count}", new Vector2(10, currentY), Settings.DebugTextColor.Value);
+            currentY += lineHeight;
+
+            Graphics.DrawText($"Discovery Points: {_currentDiscoveryIndex}/{_discoveryPoints.Count}", new Vector2(10, currentY), Settings.DebugTextColor.Value);
+            currentY += lineHeight;
+
+            Graphics.DrawText($"Explored Areas: {_exploredAreas.Count}", new Vector2(10, currentY), Settings.DebugTextColor.Value);
+            currentY += lineHeight;
+
+            var explorationPercent = CalculateExplorationPercent();
+            Graphics.DrawText($"Exploration: {explorationPercent:P1} / {Settings.DiscoveryPercent.Value:P1}", new Vector2(10, currentY), Settings.DebugTextColor.Value);
+            currentY += lineHeight;
+
+            var playerPos = GetPlayerPosition();
+            Graphics.DrawText($"Player Position: {playerPos}", new Vector2(10, currentY), Settings.DebugTextColor.Value);
+            currentY += lineHeight;
+
+            if (_currentTarget != null)
+            {
+                var targetPos = GetEntityPosition(_currentTarget);
+                var distance = Vector2.Distance(playerPos, targetPos);
+                var priority = GetMonsterPriority(_currentTarget);
+                Graphics.DrawText($"Target Distance: {distance:F1} | Priority: {priority}", new Vector2(10, currentY), Settings.DebugTextColor.Value);
+                currentY += lineHeight;
+            }
+
+            var runTime = (DateTime.Now - _startTime).TotalMinutes;
+            Graphics.DrawText($"Run Time: {runTime:F1}m / {Settings.MaxMapRunTime.Value / 60:F1}m", new Vector2(10, currentY), Settings.DebugTextColor.Value);
+        }
+        catch (Exception ex)
+        {
+            LogError($"Error drawing debug info: {ex.Message}");
+        }
+    }
+
+    public override void DrawSettings()
+    {
+        base.DrawSettings();
+        
+        if (ImGuiNET.ImGui.Button("Start Map Exploration"))
+        {
+            StartMapExploration();
+        }
+        
+        ImGuiNET.ImGui.SameLine();
+        
+        if (ImGuiNET.ImGui.Button("Stop Navigation"))
+        {
+            StopNavigation();
+        }
+        
+        ImGuiNET.ImGui.Separator();
+        
+        if (ImGuiNET.ImGui.CollapsingHeader("Current Status"))
+        {
+            ImGuiNET.ImGui.Text($"Navigation Active: {_isNavigating}");
+            ImGuiNET.ImGui.Text($"Map Completed: {_mapCompleted}");
+            ImGuiNET.ImGui.Text($"Current Target: {(_currentTarget?.RenderName ?? "None")}");
+            ImGuiNET.ImGui.Text($"Nearby Monsters: {_nearbyMonsters.Count}");
+            ImGuiNET.ImGui.Text($"Discovery Points: {_currentDiscoveryIndex}/{_discoveryPoints.Count}");
+            ImGuiNET.ImGui.Text($"Explored Areas: {_exploredAreas.Count}");
+            ImGuiNET.ImGui.Text($"Exploration: {CalculateExplorationPercent():P1}");
+            
+            if (_startTime != DateTime.MinValue)
+            {
+                var runTime = (DateTime.Now - _startTime).TotalMinutes;
+                ImGuiNET.ImGui.Text($"Run Time: {runTime:F1} minutes");
+            }
+        }
+        
+        if (ImGuiNET.ImGui.CollapsingHeader("Performance Stats"))
+        {
+            var timeSinceLastAction = (DateTime.Now - _lastActionTime).TotalMilliseconds;
+            ImGuiNET.ImGui.Text($"Last Action: {timeSinceLastAction:F0}ms ago");
+            
+            var timeSinceLastMovement = (DateTime.Now - _lastMovementTime).TotalMilliseconds;
+            ImGuiNET.ImGui.Text($"Last Movement: {timeSinceLastMovement:F0}ms ago");
+            
+            var timeSinceLastAttack = (DateTime.Now - _lastAttackTime).TotalMilliseconds;
+            ImGuiNET.ImGui.Text($"Last Attack: {timeSinceLastAttack:F0}ms ago");
+        }
+    }    public override void OnClose()
+    {
+        StopNavigation();
+        base.OnClose();
     }
 }

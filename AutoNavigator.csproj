@@ -12,12 +12,12 @@
 
   <ItemGroup>
     <Reference Include="ExileCore2">
-      <HintPath>$(exapiPackage)\ExileCore2.dll</HintPath>
-      <Private>false</Private>
+      <HintPath>c:\Users\zeros\Desktop\repanent\cor\ExileCore2.dll</HintPath>
+      <Private>False</Private>
     </Reference>
     <Reference Include="GameOffsets2">
-      <HintPath>$(exapiPackage)\GameOffsets2.dll</HintPath>
-      <Private>false</Private>
+      <HintPath>c:\Users\zeros\Desktop\repanent\cor\GameOffsets2.dll</HintPath>
+      <Private>False</Private>
     </Reference>
   </ItemGroup>
 
